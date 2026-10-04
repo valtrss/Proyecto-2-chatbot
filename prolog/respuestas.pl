@@ -185,6 +185,12 @@ respuesta(gluten([P]), T) :- !,
     nombre(P, N), estado_gluten(P, Apto, Razon),
     texto_apto(Apto, "apto para celíacos", TA),
     format(string(T), "~w: ~w, porque ~w.", [N, TA, Razon]).
+respuesta(gluten([P1, P2 | Resto]), T) :-
+    length([P1, P2 | Resto], N), N =< 3, !,
+    findall(L, ( member(P, [P1, P2 | Resto]), nombre(P, Nom), estado_gluten(P, Apto, Razon),
+                 texto_apto(Apto, "apto para celíacos", TA),
+                 format(string(L), "• ~w: ~w, porque ~w.", [Nom, TA, Razon]) ), Ls),
+    lineas(Ls, T).
 respuesta(gluten(Ps), T) :-
     findall(P, (member(P, Ps), apto_celiaco(P)), Si),
     respuesta_filtro(Si, "sin gluten", T).
@@ -218,6 +224,12 @@ respuesta(lactosa([P]), T) :- !,
     nombre(P, N), estado_lactosa(P, Apto, Razon),
     texto_apto(Apto, "apto para intolerantes a la lactosa", TA),
     format(string(T), "~w: ~w, porque ~w.", [N, TA, Razon]).
+respuesta(lactosa([P1, P2 | Resto]), T) :-
+    length([P1, P2 | Resto], N), N =< 3, !,
+    findall(L, ( member(P, [P1, P2 | Resto]), nombre(P, Nom), estado_lactosa(P, Apto, Razon),
+                 texto_apto(Apto, "apto para intolerantes a la lactosa", TA),
+                 format(string(L), "• ~w: ~w, porque ~w.", [Nom, TA, Razon]) ), Ls),
+    lineas(Ls, T).
 respuesta(lactosa(Ps), T) :-
     findall(P, (member(P, Ps), apto_sin_lactosa(P)), Si),
     respuesta_filtro(Si, "sin lactosa", T).

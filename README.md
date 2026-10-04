@@ -7,7 +7,7 @@ Es un chatbot que responde preguntas sobre productos y cocina italiana a partir 
 1. **Prolog:** el conocimiento está modelado en lógica de primer orden.
 2. **LLM + Python:** pendiente para la Entrega 2.
 
-La explicación del dominio y del modelo está en [docs/dominio.md](docs/dominio.md).
+La explicación del dominio y del modelo está en [docs/dominio.md](docs/dominio.md), y el informe de desempeño con las 20 preguntas en [docs/informe.md](docs/informe.md).
 
 **Versión web:** <https://valtrss.github.io/Proyecto-2-chatbot/>. Prolog se ejecuta dentro del navegador con [swipl-wasm](https://www.npmjs.com/package/swipl-wasm), SWI-Prolog compilado a WebAssembly, así que no necesita servidor. La primera carga tarda unos segundos mientras se descarga Prolog.
 
