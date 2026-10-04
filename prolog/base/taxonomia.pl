@@ -10,6 +10,8 @@
 */
 :- encoding(utf8).
 
+:- dynamic subtipo/2.
+
 % --- Lácteos ---------------------------------------------------------
 subtipo(queso_duro,      queso).
 subtipo(queso_semiduro,  queso).

@@ -9,4 +9,5 @@
 :- ensure_loaded('base/regiones').
 :- ensure_loaded('base/recetas').
 :- ensure_loaded('base/maridajes').
+:- ensure_loaded('base/combinaciones').
 :- ensure_loaded(reglas).

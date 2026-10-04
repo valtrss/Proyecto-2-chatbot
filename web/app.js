@@ -3,9 +3,8 @@ const formulario = document.getElementById("formulario");
 const campo = document.getElementById("pregunta");
 const boton = formulario.querySelector("button");
 
-function motorElegido() {
-  return document.querySelector('input[name="motor"]:checked').value;
-}
+// Por ahora solo existe el motor Prolog; el LLM llega en la Entrega 2.
+const MOTOR = "prolog";
 
 function agregarMensaje(texto, clase, etiqueta) {
   const div = document.createElement("div");
@@ -23,7 +22,6 @@ function agregarMensaje(texto, clase, etiqueta) {
 }
 
 async function preguntar(pregunta) {
-  const motor = motorElegido();
   agregarMensaje(pregunta, "yo");
   const pensando = agregarMensaje("Pensando…", "bot pensando");
   boton.disabled = true;
@@ -32,14 +30,14 @@ async function preguntar(pregunta) {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pregunta, motor }),
+      body: JSON.stringify({ pregunta, motor: MOTOR }),
     });
     const datos = await res.json();
     pensando.remove();
     if (!res.ok) {
       agregarMensaje(datos.error || "Error desconocido.", "bot error");
     } else {
-      agregarMensaje(datos.respuesta, "bot", datos.motor);
+      agregarMensaje(datos.respuesta, "bot");
     }
   } catch {
     pensando.remove();

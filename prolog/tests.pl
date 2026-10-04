@@ -8,10 +8,10 @@
 
 :- begin_tests(reglas).
 
-test(taxonomia_transitiva)        :- es_un(gorgonzola_dolce, queso).
-test(herencia_multiple)           :- es_un(lambrusco_grasparossa, vino_tinto),
+test(taxonomia_transitiva, [nondet]) :- es_un(gorgonzola_dolce, queso).
+test(herencia_multiple, [nondet]) :- es_un(lambrusco_grasparossa, vino_tinto),
                                      es_un(lambrusco_grasparossa, vino_espumante).
-test(animal_por_defecto)          :- animal_de(nduja, cerdo).
+test(animal_por_defecto, [nondet]) :- animal_de(nduja, cerdo).
 test(animal_excepcion)            :- animal_de(bresaola, vacuno).
 test(pasta_contiene_gluten)       :- estado_gluten(spaghetti_gragnano, no, _).
 test(pasta_sin_gluten_declarada)  :- apto_celiaco(spaghetti_sin_gluten).
@@ -28,6 +28,14 @@ test(carbonara_sin_gluten_con_sustituto) :-
     memberchk(guanciale-sustituto(pancetta, pancetta), Plan).
 test(maridaje_regional) :-
     sugerencias_vino_producto(gorgonzola_dolce, [vin_santo-_ | _]).
+
+test(ciclo_en_taxonomia_no_cuelga, [setup(assertz(user:subtipo(queso, queso_duro))),
+                                      cleanup(retract(user:subtipo(queso, queso_duro)))]) :-
+    findall(T, hereda(queso_duro, T), Ts),
+    memberchk(lacteo, Ts).
+test(misma_region)                :- misma_region(nduja, amaro_del_capo).
+test(misma_region_distintos, [fail]) :- misma_region(nduja, nduja).
+test(combina_simetrico)           :- se_combinan(balsamico, parmigiano_reggiano).
 
 :- end_tests(reglas).
 
@@ -47,6 +55,7 @@ test(alias_largo) :- intencion_de("pecorino romano", ficha([pecorino_romano])).
 test(ambiguo)     :- intencion_de("precio del chianti", precio([chianti_classico, chianti_riserva])).
 test(zona)        :- intencion_de("¿qué embutidos hay del sur?", por_zona(sur, embutido)).
 test(sello_puntos) :- intencion_de("¿Qué significa D.O.P.?", explicar_sello([dop])).
+test(combinaciones) :- intencion_de("¿con qué combina el balsamico?", combinaciones(balsamico)).
 test(no_entiende) :- intencion_de("asdf qwerty", no_entiendo).
 
 :- end_tests(lenguaje).

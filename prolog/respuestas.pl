@@ -5,7 +5,6 @@
 :- encoding(utf8).
 
 :- use_module(library(lists)).
-:- use_module(library(apply)).
 
 :- discontiguous respuesta/2.
 
@@ -80,10 +79,10 @@ capitalizar(S, C) :-
     sub_string(S, 0, 1, _, Pri), sub_string(S, 1, _, 0, Resto),
     string_upper(Pri, PriM), string_concat(PriM, Resto, C).
 
-productos_filtrados(T, Filtro, Ps) :-
-    findall(P, ( producto(P, _, _, _, _),
-                 ( T == todo -> true ; once(es_un(P, T)) ),
-                 call(Filtro, P) ), Ps).
+% ["a","b"] -> "• a\n• b"
+vinetas(Textos, Lista) :-
+    findall(L, (member(X, Textos), format(string(L), "• ~w", [X])), Ls),
+    lineas(Ls, Lista).
 
 /* ===================================================================
    Respuestas por intención
@@ -135,7 +134,7 @@ respuesta(sello_producto(Ps), T) :-
 
 respuesta(por_sello(S, Tipo), T) :-
     significado_sello(S, Sigla, Exp),
-    productos_filtrados(Tipo, [P]>>sello(P, S), Ps),
+    productos_con_sello(Tipo, S, Ps),
     lista_productos(Ps, Lista),
     length(Ps, N),
     format(string(T), "~w (~w).~nHay ~w productos con este sello:~n~w", [Sigla, Exp, N, Lista]).
@@ -167,6 +166,16 @@ lineas_vino(Sug, Reg, Max, Ls) :-
                  ( region(V, Reg) -> Nota = ", y es de la misma región del plato" ; Nota = "" ),
                  format(string(L), "~w~n   porque ~w~w.", [LP, Razon, Nota]) ), Ls).
 
+% --- Combinaciones -------------------------------------------------------
+respuesta(combinaciones(P), T) :-
+    nombre(P, N),
+    findall(Q, se_combinan(P, Q), Qs),
+    (   Qs == []
+    ->  format(string(T), "No tengo combinaciones registradas para ~w.", [N])
+    ;   lista_productos(Qs, L),
+        format(string(T), "~w combina bien con:~n~w", [N, L])
+    ).
+
 % --- Gluten, lactosa, vegetariano, picante ------------------------------
 respuesta(gluten([]), T) :- !,
     findall(P, apto_celiaco(P), Ps), length(Ps, N),
@@ -177,7 +186,7 @@ respuesta(gluten([P]), T) :- !,
     texto_apto(Apto, "apto para celíacos", TA),
     format(string(T), "~w: ~w, porque ~w.", [N, TA, Razon]).
 respuesta(gluten(Ps), T) :-
-    include(apto_celiaco, Ps, Si),
+    findall(P, (member(P, Ps), apto_celiaco(P)), Si),
     respuesta_filtro(Si, "sin gluten", T).
 
 respuesta(gluten_receta(R), T) :-
@@ -210,7 +219,7 @@ respuesta(lactosa([P]), T) :- !,
     texto_apto(Apto, "apto para intolerantes a la lactosa", TA),
     format(string(T), "~w: ~w, porque ~w.", [N, TA, Razon]).
 respuesta(lactosa(Ps), T) :-
-    include(apto_sin_lactosa, Ps, Si),
+    findall(P, (member(P, Ps), apto_sin_lactosa(P)), Si),
     respuesta_filtro(Si, "sin lactosa", T).
 
 respuesta(vegetariano([P]), T) :- !,
@@ -222,7 +231,7 @@ respuesta(vegetariano([P]), T) :- !,
     ).
 respuesta(vegetariano(Ps), T) :-
     ( Ps == [] -> findall(P, producto(P,_,_,_,_), Todos) ; Todos = Ps ),
-    include(vegetariano, Todos, Si),
+    findall(P, (member(P, Todos), vegetariano(P)), Si),
     respuesta_filtro(Si, "aptos para vegetarianos", T).
 
 respuesta(vegetariano_receta(R), T) :-
@@ -240,7 +249,7 @@ respuesta(picante([P]), T) :- !,
     ;               format(string(T), "No, ~w no es picante.", [N]) ).
 respuesta(picante(Ps), T) :-
     ( Ps == [] -> findall(P, producto(P,_,_,_,_), Todos) ; Todos = Ps ),
-    include(picante, Todos, Si),
+    findall(P, (member(P, Todos), picante(P)), Si),
     respuesta_filtro(Si, "picantes", T).
 
 respuesta(ahumados, T) :-
@@ -262,7 +271,7 @@ respuesta(recetas_filtro(Filtro), T) :-
     findall(N, ( receta(R, N, _, _), receta_cumple(Filtro, R) ), Ns),
     filtro_texto(Filtro, Desc),
     (   Ns == [] -> format(string(T), "No tengo recetas ~w.", [Desc])
-    ;   maplist([N, L]>>format(string(L), "• ~w", [N]), Ns, Ls), lineas(Ls, Lista),
+    ;   vinetas(Ns, Lista),
         format(string(T), "Recetas ~w:~n~w", [Desc, Lista])
     ).
 
@@ -326,8 +335,7 @@ respuesta(recetas_con(Ps), T) :-
     nombres_lista(Ps, NPs),
     (   Rs == []
     ->  format(string(T), "No conozco recetas que usen ~w.", [NPs])
-    ;   maplist(nombre_receta, Rs, NRs), maplist([N, L]>>format(string(L), "• ~w", [N]), NRs, Ls),
-        lineas(Ls, Lista),
+    ;   maplist(nombre_receta, Rs, NRs), vinetas(NRs, Lista),
         format(string(T), "Con ~w puedes preparar:~n~w", [NPs, Lista])
     ).
 
@@ -336,7 +344,7 @@ respuesta(recetas_region(Reg), T) :-
     findall(N, receta(_, N, Reg, _), Ns),
     (   Ns == []
     ->  format(string(T), "No tengo recetas típicas de ~w.", [NReg])
-    ;   maplist([N, L]>>format(string(L), "• ~w", [N]), Ns, Ls), lineas(Ls, Lista),
+    ;   vinetas(Ns, Lista),
         format(string(T), "Recetas típicas de ~w:~n~w", [NReg, Lista])
     ).
 
@@ -364,18 +372,14 @@ respuesta(alternativas(P), T) :-
 
 respuesta(mas_barato(T0), T) :-
     nombre_tipo_sing(T0, NT),
-    (   T0 == todo -> aggregate_all(min(Pr, X), (disponible(X), precio(X, Pr)), min(_, P))
-    ;   mas_barato(T0, P)
-    ), !,
+    mas_barato(T0, P), !,
     linea_producto(P, L),
     format(string(T), "El ~w más barato disponible es:~n~w", [NT, L]).
 respuesta(mas_barato(_), "No encontré productos disponibles de ese tipo.").
 
 respuesta(mas_caro(T0), T) :-
     nombre_tipo_sing(T0, NT),
-    (   T0 == todo -> aggregate_all(max(Pr, X), (disponible(X), precio(X, Pr)), max(_, P))
-    ;   mas_caro(T0, P)
-    ), !,
+    mas_caro(T0, P), !,
     linea_producto(P, L),
     format(string(T), "El ~w más caro disponible es:~n~w", [NT, L]).
 respuesta(mas_caro(_), "No encontré productos disponibles de ese tipo.").
@@ -450,13 +454,13 @@ linea_origen(_, N, L) :-
 
 respuesta(por_zona(Z, Tipo), T) :-
     zona_con_de(Z, NZ), nombre_tipo_plur(Tipo, NT),
-    productos_filtrados(Tipo, [P]>>zona(P, Z), Ps),
+    productos_de_zona(Tipo, Z, Ps),
     format(string(D), "~w (~w)", [NZ, NT]),
     respuesta_filtro(Ps, D, T).
 
 respuesta(por_region(R, Tipo), T) :-
     region_italiana(R, NR, Z, Cap), nombre_zona(Z, NZ), nombre_tipo_plur(Tipo, NT),
-    productos_filtrados(Tipo, [P]>>region(P, R), Ps),
+    productos_de_region(Tipo, R, Ps),
     findall(N, receta(_, N, R, _), Rs),
     (   Ps == [] -> format(string(LP), "No tengo ~w de ~w en el catálogo.", [NT, NR])
     ;   lista_productos(Ps, L), length(Ps, Cant), capitalizar(NT, NTM),

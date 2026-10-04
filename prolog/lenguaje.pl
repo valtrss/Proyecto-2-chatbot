@@ -7,7 +7,6 @@
 :- encoding(utf8).
 
 :- use_module(library(lists)).
-:- use_module(library(apply)).
 
 /* ===================================================================
    1. Normalización
@@ -19,8 +18,7 @@ normalizar(Texto, Palabras) :-
     maplist(simplificar_char, Cs0, Cs),
     string_chars(Limpio, Cs),
     split_string(Limpio, " ", " ", Partes),
-    exclude(==(""), Partes, Partes2),
-    maplist([S, A]>>atom_string(A, S), Partes2, Palabras).
+    findall(A, (member(S, Partes), S \== "", atom_string(A, S)), Palabras).
 
 % Quita tildes y convierte todo lo que no sea letra o dígito en espacio.
 simplificar_char(C, S) :- tilde(C, S), !.
@@ -45,7 +43,8 @@ alias(tipo,     Id, Ps) :- nombre_tipo(Id, _, Plur), normalizar(Plur, Ps).
 alias(sello,    Id, [Id]) :- significado_sello(Id, _, _).
 alias(zona,     Z,  [Z])  :- member(Z, [norte, centro, sur, islas]).
 alias(leche,    A,  [A])  :- member(A, [vaca, oveja, bufala]).
-alias(uva,      U,  Ps)   :- setof(X, P^uva(P, X), Us), member(U, Us), id_palabras(U, Ps).
+alias(uva,      U,  Ps)   :- findall(X, uva(_, X), Us0), sort(Us0, Us),
+                             member(U, Us), id_palabras(U, Ps).
 alias(Clase,    Id, Ps)   :- sinonimo(Clase, Id, Texto), normalizar(Texto, Ps).
 
 id_palabras(Id, Ps) :- atomic_list_concat(Ps, '_', Id).
@@ -73,7 +72,8 @@ menciones(Palabras, Clase, Ids) :-
                     length(Alias, N) ), Pares),
     (   Pares == []
     ->  Ids = []
-    ;   max_member(Max-_, Pares),
+    ;   findall(N, member(N-_, Pares), Largos),
+        max_list(Largos, Max),
         findall(Id, member(Max-Id, Pares), Ids0),
         sort(Ids0, Ids)
     ).
@@ -129,6 +129,11 @@ intencion_(W, maridaje_desconocido) :-
     ;   dice(W, [vino]), memberchk(con, W)
     ),
     menciones(W, producto, []), menciones(W, receta, []).
+
+% "¿Con qué combina el parmigiano?"
+intencion_(W, combinaciones(P)) :-
+    dice(W, [combina, combinan, combinar, combino, juntar]),
+    menciona(W, producto, P).
 
 % Restricciones alimentarias
 intencion_(W, recetas_filtro(vegetariano)) :-

@@ -5,16 +5,21 @@
 :- encoding(utf8).
 
 :- use_module(library(lists)).
-:- use_module(library(apply)).
-:- use_module(library(aggregate)).
 
 /* ===================================================================
    1. Clasificación (taxonomía transitiva)
    =================================================================== */
 
 % hereda(+Tipo, ?Superior): Tipo es Superior o desciende de él.
-hereda(T, T).
-hereda(T, Sup) :- subtipo(T, Padre), hereda(Padre, Sup).
+% Se lleva la lista de tipos ya visitados para no caer en un ciclo infinito
+% si alguien escribe por error subtipo(a, b) y subtipo(b, a).
+hereda(T, Sup) :- hereda(T, Sup, [T]).
+
+hereda(T, T, _).
+hereda(T, Sup, Visitados) :-
+    subtipo(T, Padre),
+    \+ member(Padre, Visitados),
+    hereda(Padre, Sup, [Padre | Visitados]).
 
 % es_un(?Producto, ?Tipo): el producto pertenece al tipo, directa o
 % indirectamente. Ej.: es_un(gorgonzola_dolce, queso) es verdadero porque
@@ -24,6 +29,11 @@ es_un(P, T) :- tipo(P, T0), hereda(T0, T).
 % productos_de_tipo(+Tipo, -Productos): lista sin repetidos.
 productos_de_tipo(T, Ps) :-
     findall(P, (producto(P, _, _, _, _), once(es_un(P, T))), Ps).
+
+% cumple_tipo(?P, +T): P es de tipo T. El tipo especial "todo" acepta
+% cualquier producto (se usa cuando la pregunta no nombra un tipo).
+cumple_tipo(P, todo) :- producto(P, _, _, _, _).
+cumple_tipo(P, T)    :- T \== todo, producto(P, _, _, _, _), once(es_un(P, T)).
 
 % sirve_para(?Producto, +Ingrediente): el producto cubre ese ingrediente
 % de una receta (el ingrediente es el producto mismo o un tipo).
@@ -111,11 +121,15 @@ vegetariano(P) :-
    =================================================================== */
 
 % mas_barato(+Tipo, -P): producto disponible más barato de un tipo.
+% Se juntan pares Precio-Producto, se ordenan y se toma el primero.
 mas_barato(T, P) :-
-    aggregate_all(min(Pr, X), (es_un(X, T), disponible(X), precio(X, Pr)), min(_, P)).
+    findall(Pr-X, (cumple_tipo(X, T), disponible(X), precio(X, Pr)), Pares),
+    sort(Pares, [_-P | _]).
 
 mas_caro(T, P) :-
-    aggregate_all(max(Pr, X), (es_un(X, T), disponible(X), precio(X, Pr)), max(_, P)).
+    findall(Pr-X, (cumple_tipo(X, T), disponible(X), precio(X, Pr)), Pares),
+    sort(Pares, Ordenados),
+    last(Ordenados, _-P).
 
 % alternativa(+P, -Q): Q es del mismo tipo directo que P y está disponible.
 alternativa(P, Q) :-
@@ -145,7 +159,8 @@ clase_ingrediente(I, Clase) :-
 
 % Opción más barata y disponible para un ingrediente.
 mejor_opcion(I, P) :-
-    aggregate_all(min(Pr, X), (sirve_para(X, I), disponible(X), precio(X, Pr)), min(_, P)).
+    findall(Pr-X, (sirve_para(X, I), disponible(X), precio(X, Pr)), Pares),
+    sort(Pares, [_-P | _]).
 
 % costo_receta(+R, -Total, -Detalle): suma una unidad de la opción más
 % barata de cada ingrediente que vende la tienda. Detalle = [I-P-Precio].
@@ -157,7 +172,8 @@ costo_receta(R, Total, Detalle) :-
               mejor_opcion(I, P),
               precio(P, Pr) ),
             Detalle),
-    foldl([_-_-Pr, A0, A]>>(A is A0 + Pr), Detalle, 0, Total).
+    findall(Pr, member(_-_-Pr, Detalle), Precios),
+    sum_list(Precios, Total).
 
 % Ingredientes que la tienda vende pero cuyas opciones están agotadas.
 ingredientes_agotados(R, Is) :-
@@ -240,8 +256,8 @@ sugerencias_vino_receta(R, Lista) :-
     findall(Pt-(V-Razon),
             ( vino_para_receta(R, V, Razon), puntaje_vino(Reg, V, Pt) ),
             Pares0),
-    keysort(Pares0, Pares),
-    pairs_values(Pares, Todos),
+    msort(Pares0, Pares),
+    quitar_claves(Pares, Todos),
     sin_repetir_vino(Todos, Lista).
 
 sugerencias_vino_producto(P, Lista) :-
@@ -249,11 +265,48 @@ sugerencias_vino_producto(P, Lista) :-
     findall(Pt-(V-Razon),
             ( vino_para_producto(P, V, Razon), puntaje_vino(Reg, V, Pt) ),
             Pares0),
-    keysort(Pares0, Pares),
-    pairs_values(Pares, Todos),
+    msort(Pares0, Pares),
+    quitar_claves(Pares, Todos),
     sin_repetir_vino(Todos, Lista).
 
+% quitar_claves(+[Clave-Valor], -[Valor])
+quitar_claves([], []).
+quitar_claves([_-X | Resto], [X | Resto2]) :- quitar_claves(Resto, Resto2).
+
+% Deja solo la primera sugerencia de cada vino (la de mejor puntaje).
 sin_repetir_vino([], []).
 sin_repetir_vino([V-R | Resto], [V-R | Lista]) :-
-    exclude([V2-_]>>(V2 == V), Resto, Resto2),
+    quitar_vino(V, Resto, Resto2),
     sin_repetir_vino(Resto2, Lista).
+
+quitar_vino(_, [], []).
+quitar_vino(V, [V-_ | Resto], Resto2) :- !, quitar_vino(V, Resto, Resto2).
+quitar_vino(V, [X | Resto], [X | Resto2]) :- quitar_vino(V, Resto, Resto2).
+
+/* ===================================================================
+   8. Relaciones entre productos
+   =================================================================== */
+
+% Dos productos distintos de la misma región.
+misma_region(P1, P2) :-
+    region(P1, R),
+    region(P2, R),
+    P1 \== P2.
+
+% Dos productos distintos de la misma marca.
+misma_marca(P1, P2) :-
+    producto(P1, _, Marca, _, _),
+    producto(P2, _, Marca, _, _),
+    P1 \== P2.
+
+% combina/2 (base/combinaciones.pl) se escribe en un solo sentido.
+% "Combinar" es simétrico, así que la regla prueba ambos sentidos.
+% No se escribe combina(X, Y) :- combina(Y, X) porque eso entra en un
+% ciclo infinito.
+se_combinan(X, Y) :- combina(X, Y).
+se_combinan(X, Y) :- combina(Y, X).
+
+% Listados por región, zona o sello, opcionalmente filtrados por tipo.
+productos_de_region(T, R, Ps) :- findall(P, (cumple_tipo(P, T), region(P, R)), Ps).
+productos_de_zona(T, Z, Ps)   :- findall(P, (cumple_tipo(P, T), zona(P, Z)), Ps).
+productos_con_sello(T, S, Ps) :- findall(P, (cumple_tipo(P, T), sello(P, S)), Ps).

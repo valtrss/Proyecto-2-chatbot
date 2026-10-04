@@ -19,6 +19,7 @@ prolog/
     regiones.pl         regiones de Italia y significado de los sellos
     recetas.pl          11 recetas con sus ingredientes
     maridajes.pl        reglas de vino por perfil de plato y tipo de producto
+    combinaciones.pl    productos que se comen juntos (relación simétrica)
     sinonimos.pl        otras formas de nombrar productos, recetas, etc.
   base.pl               carga todos los hechos y las reglas
   reglas.pl             reglas de inferencia
@@ -54,6 +55,32 @@ swipl chatbot.pl
 ?- analizar("precio del parmesano").          % muestra palabras e intención
 ?- es_un(gorgonzola_dolce, X).                % consultas directas a la base
 ?- costo_receta(carbonara, Total, Detalle).
+```
+
+### Consultas directas a la base de conocimiento
+
+Consultas de sí o no:
+
+```prolog
+?- es_un(gorgonzola_dolce, queso).            % true (por la taxonomía)
+?- apto_celiaco(spaghetti_gragnano).          % false: es pasta de trigo
+?- receta_completa(pasta_e_patate).           % false: la pasta mista está agotada
+?- se_combinan(balsamico, parmigiano_reggiano). % true (relación simétrica)
+```
+
+Consultas con variables (`;` pide la siguiente respuesta):
+
+```prolog
+?- region(P, toscana).                        % productos de Toscana
+?- es_un(P, queso_azul).                      % quesos azules
+?- leche(Q, oveja).                           % quesos de oveja
+?- misma_region(nduja, X).                    % otros productos de Calabria
+?- recetas_con(guanciale, R).                 % recetas que usan guanciale
+?- animal_de(bresaola, A).                    % A = vacuno (excepción a la regla por defecto)
+?- mas_barato(vino, V).                       % vino disponible más barato
+?- costo_receta(carbonara, Total, Detalle).
+?- receta_sin_gluten(carbonara, Plan, Problemas).
+?- findall(P, sello(P, dop), L).              % todos los productos D.O.P.
 ```
 
 ### Interfaz web

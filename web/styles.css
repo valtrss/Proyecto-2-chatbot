@@ -1,29 +1,15 @@
 :root {
-  --fondo: #f6f1e7;
-  --panel: #fffdf8;
-  --texto: #2b2620;
-  --suave: #7a6f62;
-  --borde: #e4dccd;
-  --verde: #2f5d46;
-  --rojo: #b3412e;
-  --burbuja-bot: #fffdf8;
-  --burbuja-yo: #2f5d46;
+  color-scheme: light;
+  --fondo: #ffffff;
+  --panel: #ffffff;
+  --texto: #222222;
+  --suave: #6b6b6b;
+  --borde: #e3e3e3;
+  --rojo: #c0392b;
+  --rojo-oscuro: #a93226;
+  --burbuja-bot: #f5f5f5;
+  --burbuja-yo: #c0392b;
   --texto-yo: #ffffff;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --fondo: #1b1915;
-    --panel: #24211c;
-    --texto: #ece6da;
-    --suave: #a99f90;
-    --borde: #3a352d;
-    --verde: #6fae8c;
-    --rojo: #e07a63;
-    --burbuja-bot: #2a2620;
-    --burbuja-yo: #3d6e55;
-    --texto-yo: #ffffff;
-  }
 }
 
 * { box-sizing: border-box; }
@@ -59,24 +45,14 @@ body {
 
 h1 {
   margin: 0;
-  font-family: "Fraunces", Georgia, serif;
-  font-size: 28px;
-  color: var(--verde);
+  font-family: "Outfit", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 30px;
+  letter-spacing: -0.01em;
+  color: var(--rojo);
 }
 
-.subtitulo { margin: 0; color: var(--suave); font-size: 13px; }
-
-.motor {
-  display: flex;
-  border: 1px solid var(--borde);
-  border-radius: 999px;
-  overflow: hidden;
-  background: var(--panel);
-}
-.motor label { padding: 6px 14px; cursor: pointer; font-size: 13px; }
-.motor input { display: none; }
-.motor label:has(input:checked) { background: var(--verde); color: #fff; }
-.motor .deshabilitado { color: var(--suave); cursor: not-allowed; }
+.subtitulo { margin: 2px 0 0; font-family: "Outfit", system-ui, sans-serif; color: var(--suave); font-size: 14px; }
 
 .conversacion {
   flex: 1;
@@ -97,7 +73,7 @@ h1 {
 .mensaje.bot {
   align-self: flex-start;
   background: var(--burbuja-bot);
-  border: 1px solid var(--borde);
+  border: 1px solid transparent;
   border-bottom-left-radius: 4px;
 }
 .mensaje.yo {
@@ -128,7 +104,7 @@ h1 {
   color: var(--texto);
   cursor: pointer;
 }
-.sugerencias button:hover { border-color: var(--verde); color: var(--verde); }
+.sugerencias button:hover { border-color: var(--rojo); color: var(--rojo); }
 
 .formulario { display: flex; gap: 8px; }
 .formulario input {
@@ -141,7 +117,7 @@ h1 {
   background: var(--panel);
   color: var(--texto);
 }
-.formulario input:focus { outline: 2px solid var(--verde); outline-offset: -1px; }
+.formulario input:focus { outline: 2px solid var(--rojo); outline-offset: -1px; }
 .formulario button {
   font: inherit;
   font-weight: 500;
@@ -152,4 +128,5 @@ h1 {
   color: #fff;
   cursor: pointer;
 }
+.formulario button:hover { background: var(--rojo-oscuro); }
 .formulario button:disabled { opacity: .6; cursor: wait; }
