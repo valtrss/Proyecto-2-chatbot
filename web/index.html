@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chatbot Gastronomía Italiana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="cabecera">
+      <div>
+        <h1>La Dispensa</h1>
+        <p class="subtitulo">Chatbot de productos y cocina italiana · datos de gourmitalia.cl</p>
+      </div>
+      <div class="motor" role="radiogroup" aria-label="Motor del chatbot">
+        <label><input type="radio" name="motor" value="prolog" checked> Prolog</label>
+        <label class="deshabilitado" title="Disponible en la Entrega 2">
+          <input type="radio" name="motor" value="llm" disabled> LLM
+        </label>
+      </div>
+    </header>
+
+    <section id="conversacion" class="conversacion" aria-live="polite"></section>
+
+    <div class="sugerencias" id="sugerencias">
+      <button type="button">¿Qué vino va con la carbonara?</button>
+      <button type="button">¿Puedo hacer carbonara sin gluten?</button>
+      <button type="button">¿Cuánto cuesta preparar un tiramisú?</button>
+      <button type="button">¿Qué quesos son de leche de oveja?</button>
+      <button type="button">¿Qué productos son de Sicilia?</button>
+      <button type="button">¿Qué significa D.O.P.?</button>
+    </div>
+
+    <form id="formulario" class="formulario" autocomplete="off">
+      <input id="pregunta" type="text" maxlength="500" placeholder="Escribe tu pregunta…" aria-label="Pregunta" required>
+      <button type="submit">Enviar</button>
+    </form>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
