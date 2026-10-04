@@ -83,14 +83,6 @@ h1 {
   border-bottom-right-radius: 4px;
 }
 .mensaje.error { border-color: var(--rojo); color: var(--rojo); }
-.mensaje .etiqueta {
-  display: block;
-  font-size: 11px;
-  color: var(--suave);
-  margin-bottom: 2px;
-  text-transform: uppercase;
-  letter-spacing: .04em;
-}
 .mensaje.pensando { color: var(--suave); font-style: italic; }
 
 .sugerencias { display: flex; gap: 6px; flex-wrap: wrap; }

@@ -9,6 +9,8 @@ Es un chatbot que responde preguntas sobre productos y cocina italiana a partir 
 
 La explicación del dominio y del modelo está en [docs/dominio.md](docs/dominio.md).
 
+**Versión web:** <https://valtrss.github.io/Proyecto-2-chatbot/>. Prolog se ejecuta dentro del navegador con [swipl-wasm](https://www.npmjs.com/package/swipl-wasm), SWI-Prolog compilado a WebAssembly, así que no necesita servidor. La primera carga tarda unos segundos mientras se descarga Prolog.
+
 ## Estructura
 
 ```
@@ -28,10 +30,11 @@ prolog/
   chatbot.pl            responder/2 y modo consola
   cli.pl                responde una pregunta (lo usa el backend)
   tests.pl              pruebas automáticas (plunit)
-backend/
-  app.py                servidor Flask (API + frontend)
-  motor_prolog.py       puente Python → SWI-Prolog
-web/                    interfaz del chat (HTML, CSS y JS)
+web/                    interfaz del chat; ejecuta Prolog en el navegador
+backend/                servidor Flask, base para la versión LLM (Entrega 2)
+  app.py                sirve la web y la API /api/chat
+  motor_prolog.py       puente Python → SWI-Prolog (por consola)
+index.html              redirige a web/ (para GitHub Pages)
 docs/                   documentación e informe
 ```
 
@@ -85,14 +88,19 @@ Consultas con variables (`;` pide la siguiente respuesta):
 
 ### Interfaz web
 
+Está publicada en <https://valtrss.github.io/Proyecto-2-chatbot/>.
+
+Para abrirla en el computador sin publicarla, basta un servidor de archivos desde la raíz del proyecto. Abrir `index.html` con doble clic no funciona, porque el navegador bloquea la descarga de los `.pl`.
+
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python backend/app.py
+python3 -m http.server 8000
 ```
 
-Después, abrir <http://localhost:5000>.
+Después, abrir <http://localhost:8000/web/>.
+
+### Publicar en GitHub Pages
+
+En el repositorio: **Settings → Pages → Build and deployment**. En *Source* elegir **Deploy from a branch**, rama **main** y carpeta **/ (root)**, y guardar. Cada `git push` actualiza la página en uno o dos minutos.
 
 ### Pruebas
 
@@ -103,7 +111,7 @@ swipl -g run_tests -t halt tests.pl
 
 ## Cómo modificar el conocimiento
 
-Todos los hechos están en `prolog/base/`, agrupados en bloques. Después de cada cambio, ejecutar `make.` en la consola de Prolog (o reiniciar). La web no necesita reiniciarse, porque cada consulta vuelve a cargar los archivos.
+Todos los hechos están en `prolog/base/`, agrupados en bloques. Después de cada cambio, ejecutar `make.` en la consola de Prolog (o reiniciar). En la web basta recargar la página, porque descarga los `.pl` cada vez que se abre.
 
 | Quiero… | Editar |
 |---|---|

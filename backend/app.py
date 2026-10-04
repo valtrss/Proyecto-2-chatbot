@@ -9,7 +9,9 @@ from flask import Flask, jsonify, request, send_from_directory
 
 import motor_prolog
 
-WEB = Path(__file__).resolve().parent.parent / "web"
+RAIZ = Path(__file__).resolve().parent.parent
+WEB = RAIZ / "web"
+PROLOG = RAIZ / "prolog"
 LARGO_MAXIMO = 500
 MOTORES = {
     "prolog": motor_prolog.responder,
@@ -22,6 +24,12 @@ app = Flask(__name__, static_folder=None)
 @app.get("/")
 def index():
     return send_from_directory(WEB, "index.html")
+
+
+# La web carga los .pl desde ../prolog/ para ejecutarlos en el navegador.
+@app.get("/prolog/<path:archivo>")
+def archivos_prolog(archivo):
+    return send_from_directory(PROLOG, archivo)
 
 
 @app.get("/<path:archivo>")
