@@ -2,8 +2,6 @@
 
 Proyecto 2: *Diseño de un agente inteligente que usa conocimiento*. Fundamentos de Inteligencia Artificial, UNAB.
 
-> **Estado:** este informe tiene las respuestas de la **versión Prolog** (Entrega 1). La columna de la **versión LLM** se completará en la Entrega 2, con las mismas 20 preguntas, para comparar ambas implementaciones.
-
 ## 1. Dominio
 
 Chatbot de **productos y cocina italiana** con datos de gourmitalia.cl. La explicación del dominio y del modelo en lógica de primer orden está en [dominio.md](dominio.md).
@@ -18,7 +16,7 @@ Se eligieron 20 preguntas en tres grupos:
 | Inferencia | 6–15 | deducir conocimiento nuevo con reglas (taxonomía, gluten, maridaje, recetas, razonamiento por defecto, simetría) |
 | Fuera de la BC y lenguaje natural | 16–20 | preguntas sobre cosas que la BC no conoce, preguntas abiertas y formas de hablar difíciles (negación, "por qué") |
 
-El tercer grupo se incluyó a propósito para encontrar los límites de cada versión.
+El tercer grupo se incluyó a propósito para encontrar los límites del chatbot.
 
 Cada respuesta se clasifica como:
 
@@ -31,32 +29,32 @@ Las respuestas de Prolog se generaron con `swipl prolog/cli.pl "<pregunta>"` el 
 
 ## 3. Resumen de resultados
 
-| # | Pregunta | Grupo | Prolog | LLM |
-|---|---|---|---|---|
-| 1 | ¿Cuánto cuesta el parmigiano reggiano? | Consulta directa | Correcta | _pendiente_ |
-| 2 | ¿De qué región es la 'nduja? | Consulta directa | Correcta | _pendiente_ |
-| 3 | ¿Qué quesos son de leche de oveja? | Consulta directa | Correcta | _pendiente_ |
-| 4 | ¿Qué significa D.O.P.? | Consulta directa | Correcta | _pendiente_ |
-| 5 | ¿Cuánto tiempo de cocción tienen los paccheri? | Consulta directa | Correcta | _pendiente_ |
-| 6 | ¿El gorgonzola tiene lactosa? | Inferencia | Correcta | _pendiente_ |
-| 7 | ¿Qué vino va con la carbonara? | Inferencia | Correcta | _pendiente_ |
-| 8 | ¿Puedo hacer carbonara sin gluten? | Inferencia | Correcta | _pendiente_ |
-| 9 | ¿Cuánto cuesta preparar un tiramisú? | Inferencia | Parcial | _pendiente_ |
-| 10 | ¿Puedo comprar todo para la pasta e patate? | Inferencia | Correcta | _pendiente_ |
-| 11 | ¿Qué recetas son vegetarianas? | Inferencia | Correcta | _pendiente_ |
-| 12 | ¿De qué animal es la bresaola? | Inferencia | Correcta | _pendiente_ |
-| 13 | ¿Qué embutidos hay del sur? | Inferencia | Correcta | _pendiente_ |
-| 14 | ¿Qué diferencia hay entre el pecorino romano y el pecorino sardo? | Inferencia | Parcial | _pendiente_ |
-| 15 | ¿Con qué combina el parmigiano? | Inferencia | Correcta | _pendiente_ |
-| 16 | ¿Qué vino va con la pizza? | Fuera de la BC | No responde | _pendiente_ |
-| 17 | ¿Qué me recomiendas para una cena romántica? | Fuera de la BC | No responde | _pendiente_ |
-| 18 | ¿Por qué el prosciutto San Daniele es tan caro? | Lenguaje natural | Incorrecta | _pendiente_ |
-| 19 | ¿Tienen algún queso de cabra? | Lenguaje natural | Incorrecta | _pendiente_ |
-| 20 | ¿Qué puedo cocinar si no como carne? | Lenguaje natural | Incorrecta | _pendiente_ |
+| # | Pregunta | Grupo | Resultado |
+|---|---|---|---|
+| 1 | ¿Cuánto cuesta el parmigiano reggiano? | Consulta directa | Correcta |
+| 2 | ¿De qué región es la 'nduja? | Consulta directa | Correcta |
+| 3 | ¿Qué quesos son de leche de oveja? | Consulta directa | Correcta |
+| 4 | ¿Qué significa D.O.P.? | Consulta directa | Correcta |
+| 5 | ¿Cuánto tiempo de cocción tienen los paccheri? | Consulta directa | Correcta |
+| 6 | ¿El gorgonzola tiene lactosa? | Inferencia | Correcta |
+| 7 | ¿Qué vino va con la carbonara? | Inferencia | Correcta |
+| 8 | ¿Puedo hacer carbonara sin gluten? | Inferencia | Correcta |
+| 9 | ¿Cuánto cuesta preparar un tiramisú? | Inferencia | Parcial |
+| 10 | ¿Puedo comprar todo para la pasta e patate? | Inferencia | Correcta |
+| 11 | ¿Qué recetas son vegetarianas? | Inferencia | Correcta |
+| 12 | ¿De qué animal es la bresaola? | Inferencia | Correcta |
+| 13 | ¿Qué embutidos hay del sur? | Inferencia | Correcta |
+| 14 | ¿Qué diferencia hay entre el pecorino romano y el pecorino sardo? | Inferencia | Parcial |
+| 15 | ¿Con qué combina el parmigiano? | Inferencia | Correcta |
+| 16 | ¿Qué vino va con la pizza? | Fuera de la BC | No responde |
+| 17 | ¿Qué me recomiendas para una cena romántica? | Fuera de la BC | No responde |
+| 18 | ¿Por qué el prosciutto San Daniele es tan caro? | Lenguaje natural | Incorrecta |
+| 19 | ¿Tienen algún queso de cabra? | Lenguaje natural | Incorrecta |
+| 20 | ¿Qué puedo cocinar si no como carne? | Lenguaje natural | Incorrecta |
 
 **Versión Prolog:** 13 correctas, 2 parciales, 3 incorrectas y 2 sin respuesta.
 
-| Grupo | Correctas Prolog |
+| Grupo | Correctas |
 |---|---|
 | Consultas directas (1–5) | 5 de 5 |
 | Inferencia (6–15) | 8 de 10 (2 parciales) |
@@ -77,8 +75,6 @@ Precio (gourmitalia.cl, octubre 2026):
 
 Dato tomado directamente de los hechos (`producto/5`). El sinónimo "parmigiano reggiano" se reconoce sin problemas.
 
-**LLM:** _pendiente (Entrega 2)._
-
 ### 2. ¿De qué región es la 'nduja?
 
 *Grupo: Consulta directa*
@@ -90,8 +86,6 @@ Dato tomado directamente de los hechos (`producto/5`). El sinónimo "parmigiano 
 ```
 
 Combina `region/2` con `region_italiana/4` para agregar la zona (sur).
-
-**LLM:** _pendiente (Entrega 2)._
 
 ### 3. ¿Qué quesos son de leche de oveja?
 
@@ -107,8 +101,6 @@ Productos de leche de oveja (2):
 
 Recorre todos los quesos con `leche(Q, oveja)`. Es una consulta con variable que devuelve todas las soluciones.
 
-**LLM:** _pendiente (Entrega 2)._
-
 ### 4. ¿Qué significa D.O.P.?
 
 *Grupo: Consulta directa*
@@ -120,8 +112,6 @@ D.O.P. = Denominación de Origen Protegida: todo el proceso (producción, elabor
 ```
 
 Respuesta desde `significado_sello/3`. Entiende la sigla escrita con puntos.
-
-**LLM:** _pendiente (Entrega 2)._
 
 ### 5. ¿Cuánto tiempo de cocción tienen los paccheri?
 
@@ -136,8 +126,6 @@ Tiempo de cocción:
 
 Dato directo de `coccion/2`.
 
-**LLM:** _pendiente (Entrega 2)._
-
 ### 6. ¿El gorgonzola tiene lactosa?
 
 *Grupo: Inferencia*
@@ -150,8 +138,6 @@ Dato directo de `coccion/2`.
 ```
 
 "Gorgonzola" es ambiguo (dolce y piccante), así que responde por ambos. Explica el motivo: la regla deduce que es lácteo por la taxonomía (`gorgonzola → queso_azul → queso → lacteo`).
-
-**LLM:** _pendiente (Entrega 2)._
 
 ### 7. ¿Qué vino va con la carbonara?
 
@@ -169,8 +155,6 @@ Para Spaghetti alla Carbonara te sugiero:
 
 Inferencia en varios pasos: perfil del plato → clase de vino → vinos del catálogo de esa clase, ordenados por región, stock y precio. Incluye la razón de cada sugerencia.
 
-**LLM:** _pendiente (Entrega 2)._
-
 ### 8. ¿Puedo hacer carbonara sin gluten?
 
 *Grupo: Inferencia*
@@ -185,8 +169,6 @@ Sí, puedes preparar Spaghetti alla Carbonara sin gluten con productos de la tie
 ```
 
 La regla busca un producto apto para cada ingrediente y, si no lo hay, usa un sustituto (guanciale → pancetta). Es la respuesta que mejor muestra el razonamiento.
-
-**LLM:** _pendiente (Entrega 2)._
 
 ### 9. ¿Cuánto cuesta preparar un tiramisú?
 
@@ -204,8 +186,6 @@ Comprando la opción más barata de cada ingrediente, Tiramisù cuesta $49.050:
 
 El cálculo es correcto según la regla, pero suma envases completos: el café de 1 kg ($34.200) infla el total, aunque la receta usa solo 300 ml de café.
 
-**LLM:** _pendiente (Entrega 2)._
-
 ### 10. ¿Puedo comprar todo para la pasta e patate?
 
 *Grupo: Inferencia*
@@ -217,8 +197,6 @@ No todo: para Pasta e Patate alla Napoletana falta Pasta Mista Dedicato Nº48 en
 ```
 
 Detecta que la pasta mista está agotada usando la negación por fallo (`\+ agotado(P)`).
-
-**LLM:** _pendiente (Entrega 2)._
 
 ### 11. ¿Qué recetas son vegetarianas?
 
@@ -239,8 +217,6 @@ Recetas vegetarianas:
 
 Usa `receta_vegetariana/1`. Se considera correcta, aunque la regla no toma en cuenta el cuajo animal de los quesos.
 
-**LLM:** _pendiente (Entrega 2)._
-
 ### 12. ¿De qué animal es la bresaola?
 
 *Grupo: Inferencia*
@@ -252,8 +228,6 @@ Usa `receta_vegetariana/1`. Se considera correcta, aunque la regla no toma en cu
 ```
 
 Razonamiento por defecto: los embutidos son de cerdo salvo excepción, y la bresaola tiene el hecho `carne(bresaola, vacuno)`.
-
-**LLM:** _pendiente (Entrega 2)._
 
 ### 13. ¿Qué embutidos hay del sur?
 
@@ -268,8 +242,6 @@ Productos del sur de Italia (embutidos) (2):
 ```
 
 Cruza dos condiciones: tipo (embutido, por taxonomía) y zona (sur, a través de la región).
-
-**LLM:** _pendiente (Entrega 2)._
 
 ### 14. ¿Qué diferencia hay entre el pecorino romano y el pecorino sardo?
 
@@ -289,8 +261,6 @@ Tipo: pecorino. Origen: Cerdeña (las islas). Leche de oveja. Maduración: 60 d�
 
 Muestra la ficha de cada queso, pero no resume las diferencias. El usuario tiene que compararlas por su cuenta (D.O.P. vs. sin sello, duro vs. semicurado).
 
-**LLM:** _pendiente (Entrega 2)._
-
 ### 15. ¿Con qué combina el parmigiano?
 
 *Grupo: Inferencia*
@@ -304,8 +274,6 @@ Parmigiano Reggiano D.O.P. 18 meses combina bien con:
 
 La BC solo tiene `combina(parmigiano_reggiano, balsamico)`. La regla simétrica `se_combinan/2` permite responder en ambos sentidos.
 
-**LLM:** _pendiente (Entrega 2)._
-
 ### 16. ¿Qué vino va con la pizza?
 
 *Grupo: Fuera de la BC*
@@ -317,8 +285,6 @@ No conozco ese plato. Puedo sugerir vino para estas recetas: Spaghetti alla Carb
 ```
 
 La pizza no está en la BC. El bot lo reconoce y ofrece las alternativas que sí conoce, sin inventar.
-
-**LLM:** _pendiente (Entrega 2)._
 
 ### 17. ¿Qué me recomiendas para una cena romántica?
 
@@ -333,8 +299,6 @@ Prueba nombrando un producto, una receta o una región, por ejemplo: «¿Qué vi
 
 Pregunta abierta, sin productos ni recetas mencionados. El bot no tiene cómo interpretarla.
 
-**LLM:** _pendiente (Entrega 2)._
-
 ### 18. ¿Por qué el prosciutto San Daniele es tan caro?
 
 *Grupo: Lenguaje natural*
@@ -347,8 +311,6 @@ El prosciutto más caro disponible es:
 ```
 
 Detecta "caro" y responde cuál es el prosciutto más caro, pero no explica el *porqué* (16 meses de maduración, D.O.P., pieza entera de 7,5 kg). La BC no tiene conocimiento causal sobre precios.
-
-**LLM:** _pendiente (Entrega 2)._
 
 ### 19. ¿Tienen algún queso de cabra?
 
@@ -376,8 +338,6 @@ Tenemos 14 quesos:
 
 No hay quesos de cabra en la BC, pero el bot lista todos los quesos sin decir que ninguno es de cabra. "Cabra" no es una palabra conocida, así que la ignora.
 
-**LLM:** _pendiente (Entrega 2)._
-
 ### 20. ¿Qué puedo cocinar si no como carne?
 
 *Grupo: Lenguaje natural*
@@ -392,8 +352,6 @@ Con esos productos puedes preparar:
 ```
 
 Error grave: no entiende la negación "no como carne". Detecta "carne" y responde recetas **con** carne, justo lo contrario de lo pedido.
-
-**LLM:** _pendiente (Entrega 2)._
 
 ## 5. Análisis de la versión Prolog
 
@@ -413,13 +371,9 @@ Error grave: no entiende la negación "no como carne". Detecta "carne" y respond
 - **Respuestas rígidas.** Las comparaciones muestran fichas en vez de resumir diferencias (14), y los cálculos siguen la regla al pie de la letra aunque el resultado no sea útil (9).
 - **Mantención manual.** Los precios y el stock son una foto del 02-10-2026, y cada sinónimo nuevo hay que escribirlo a mano.
 
-### Versión LLM
+## 6. Conclusiones
 
-_Pendiente (Entrega 2)._ Se espera que el LLM entienda mejor el lenguaje natural (negaciones, preguntas abiertas, "por qué") pero que pueda inventar datos (precios, productos que no existen en la tienda). Las mismas 20 preguntas permitirán comprobarlo.
-
-## 6. Conclusiones (preliminares)
-
-La versión Prolog es **confiable dentro de su dominio**: en las consultas directas y de inferencia no da datos falsos y explica sus conclusiones. Su punto débil es la **comprensión del lenguaje**, no el razonamiento. Las 5 preguntas sin una respuesta correcta tienen que ver con la forma de preguntar o con conocimiento que no está en la BC. Las conclusiones finales se escribirán al comparar con la versión LLM.
+La versión Prolog es **confiable dentro de su dominio**: en las consultas directas y de inferencia no da datos falsos y explica sus conclusiones. Su punto débil es la **comprensión del lenguaje**, no el razonamiento. Las 5 preguntas sin una respuesta correcta tienen que ver con la forma de preguntar o con conocimiento que no está en la BC.
 
 ## 7. Propuestas de mejora
 
@@ -429,4 +383,4 @@ La versión Prolog es **confiable dentro de su dominio**: en las consultas direc
 4. **Costo proporcional:** guardar la cantidad de cada envase para calcular el costo según lo que usa la receta, no por envase completo.
 5. **Conocimiento causal:** hechos como `motivo_precio(P, Razon)` para responder preguntas de tipo "por qué".
 6. **Actualizar el catálogo automáticamente:** generar `productos.pl` desde la API pública de la tienda (`/products.json`) para mantener precios y stock al día.
-7. **Combinar ambas versiones:** usar el LLM solo para traducir la pregunta a una consulta Prolog y dejar que Prolog responda. Así se juntaría la comprensión del lenguaje del LLM con la exactitud de la BC.
+7. **Apoyarse en un modelo de lenguaje:** usar un LLM solo para traducir la pregunta a una consulta Prolog y dejar que Prolog responda. Así se juntaría la comprensión del lenguaje del LLM con la exactitud de la BC.
