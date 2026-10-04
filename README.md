@@ -4,9 +4,18 @@ Proyecto 2 de Fundamentos de Inteligencia Artificial (UNAB): *Diseño de un agen
 
 Es un chatbot que responde preguntas sobre productos y cocina italiana a partir del catálogo de [gourmitalia.cl](https://gourmitalia.cl). El conocimiento está modelado en lógica de primer orden con Prolog.
 
-La explicación del dominio y del modelo está en [docs/dominio.md](docs/dominio.md), y el informe de desempeño con las 20 preguntas en [docs/informe.md](docs/informe.md).
+**Versión web:** <https://valtrss.github.io/Proyecto-2-chatbot/>
 
-**Versión web:** <https://valtrss.github.io/Proyecto-2-chatbot/>. Prolog se ejecuta dentro del navegador con [swipl-wasm](https://www.npmjs.com/package/swipl-wasm), SWI-Prolog compilado a WebAssembly, así que no necesita servidor. La primera carga tarda unos segundos mientras se descarga Prolog.
+## Documentación
+
+- **[Dominio y modelo del conocimiento](docs/dominio.md):** por qué elegimos el dominio y cómo está representado el conocimiento. Incluye las constantes y predicados con su aridad, las reglas escritas en lógica de primer orden y cómo Prolog demuestra una consulta.
+- **[Informe de desempeño](docs/informe.md):** las 20 preguntas de prueba con las respuestas del chatbot, el análisis de sus fortalezas y debilidades, las conclusiones y las propuestas de mejora.
+
+## Integrantes
+
+- Carlos León Gómez
+- Nicolás Salas Villarroel
+- Simón Saavedra Avello
 
 ## Estructura
 
@@ -34,9 +43,3 @@ backend/                servidor Flask
 index.html              redirige a web/ (para GitHub Pages)
 docs/                   documentación e informe
 ```
-
-## Integrantes
-
-- Carlos León Gómez
-- Nicolás Salas Villarroel
-- Simón Saavedra Avello
