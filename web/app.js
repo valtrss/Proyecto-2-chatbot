@@ -1,6 +1,9 @@
 // El chatbot Prolog corre dentro del navegador con SWI-Prolog compilado a
 // WebAssembly (swipl-wasm). Así la página funciona sin servidor, por ejemplo
 // en GitHub Pages. Los archivos .pl se descargan de la carpeta prolog/.
+//
+// La versión LLM necesita el servidor de backend/ (la API key no puede ir en
+// el navegador). Si el servidor está disponible, aparece el selector de motor.
 
 const SWIPL_CDN = "https://cdn.jsdelivr.net/npm/swipl-wasm@8.2.1/dist/swipl/";
 const CARPETA_PROLOG = "../prolog/";
@@ -61,19 +64,62 @@ async function cargarProlog() {
   return motor;
 }
 
+function motorElegido() {
+  const marcado = document.querySelector('input[name="motor"]:checked');
+  return marcado ? marcado.value : "prolog";
+}
+
+async function responderLLM(pregunta) {
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pregunta, motor: "llm" }),
+  });
+  const datos = await res.json();
+  if (!res.ok) throw new Error(datos.error || "Error del servidor");
+  return datos.respuesta;
+}
+
+// Muestra el selector Prolog | LLM solo si el backend ofrece el motor LLM.
+async function detectarLLM() {
+  try {
+    const res = await fetch("/api/motores");
+    if (!res.ok) return;
+    const motores = await res.json();
+    if (motores.includes("llm")) document.getElementById("motor").hidden = false;
+  } catch {
+    // Sin servidor (por ejemplo en GitHub Pages): solo Prolog.
+  }
+}
+
 function responder(pregunta) {
   const resultado = swipl.prolog.query("responder(P, R)", { P: pregunta }).once();
   if (!resultado.success) return "No pude armar una respuesta.";
   return typeof resultado.R === "string" ? resultado.R : resultado.R.v;
 }
 
-function preguntar(pregunta) {
+async function preguntar(pregunta) {
   agregarMensaje(pregunta, "yo");
-  try {
-    agregarMensaje(responder(pregunta), "bot");
-  } catch (e) {
-    console.error(e);
-    agregarMensaje("Ocurrió un error al consultar Prolog.", "bot error");
+  if (motorElegido() === "llm") {
+    const pensando = agregarMensaje("Pensando…", "bot pensando");
+    boton.disabled = true;
+    try {
+      const texto = await responderLLM(pregunta);
+      pensando.remove();
+      agregarMensaje(texto, "bot");
+    } catch (e) {
+      pensando.remove();
+      agregarMensaje(`No se pudo consultar el LLM: ${e.message}`, "bot error");
+    } finally {
+      boton.disabled = false;
+    }
+  } else {
+    try {
+      agregarMensaje(responder(pregunta), "bot");
+    } catch (e) {
+      console.error(e);
+      agregarMensaje("Ocurrió un error al consultar Prolog.", "bot error");
+    }
   }
   campo.focus();
 }
@@ -106,4 +152,5 @@ async function iniciar() {
   }
 }
 
+detectarLLM();
 iniciar();

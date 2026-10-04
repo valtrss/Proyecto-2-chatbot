@@ -54,6 +54,18 @@ h1 {
 
 .subtitulo { margin: 2px 0 0; font-family: "Outfit", system-ui, sans-serif; color: var(--suave); font-size: 14px; }
 
+.motor {
+  display: flex;
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  overflow: hidden;
+  font-family: "Outfit", system-ui, sans-serif;
+}
+.motor[hidden] { display: none; }
+.motor label { padding: 6px 14px; cursor: pointer; font-size: 14px; }
+.motor input { display: none; }
+.motor label:has(input:checked) { background: var(--rojo); color: #fff; }
+
 .conversacion {
   flex: 1;
   overflow-y: auto;

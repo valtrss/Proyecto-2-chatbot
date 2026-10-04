@@ -7,6 +7,7 @@ from pathlib import Path
 
 from flask import Flask, jsonify, request, send_from_directory
 
+import motor_llm
 import motor_prolog
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -15,7 +16,7 @@ PROLOG = RAIZ / "prolog"
 LARGO_MAXIMO = 500
 MOTORES = {
     "prolog": motor_prolog.responder,
-    # "llm": motor_llm.responder,   # Entrega 2
+    "llm": motor_llm.responder,
 }
 
 app = Flask(__name__, static_folder=None)
@@ -60,6 +61,9 @@ def chat():
     except motor_prolog.ErrorProlog as e:
         app.logger.error("Error de Prolog: %s", e)
         return jsonify(error="El motor Prolog no pudo responder."), 500
+    except motor_llm.ErrorLLM as e:
+        app.logger.error("Error del LLM: %s", e)
+        return jsonify(error=str(e)), 500
 
     return jsonify(motor=motor, respuesta=respuesta)
 
