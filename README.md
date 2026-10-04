@@ -37,6 +37,6 @@ docs/                   documentación e informe
 
 ## Integrantes
 
-- _(completar)_
-- _(completar)_
-- _(completar)_
+- Carlos León Gómez
+- Nicolás Salas Villarroel
+- Simón Saavedra Avello
